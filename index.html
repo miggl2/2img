@@ -78,13 +78,13 @@
 			canvas3.height = canvas.height;
 			var second = canvas3.getContext('2d');
 			if(canvas.width/canvas.height>img2.width/img2.height) {
-				second.drawImage(img2,img2.width*canvas.height/img2.height/2,0, img2.width*canvas.height/img2.height,canvas.height);
+				second.drawImage(img2,(canvas.width-img2.width*canvas.height/img2.height)/2,0, img2.width*canvas.height/img2.height,canvas.height);
 			}
 			else if(canvas.width/canvas.height==img2.width/img2.height) {
 				second.drawImage(img2,0,0, canvas.width,canvas.height);	
 			}
 			else {
-				second.drawImage(img2,0,img2.height*canvas.width/img2.width/2, canvas.width,img2.height*canvas.width/img2.width);
+				second.drawImage(img2,0,(canvas.height-img2.height*canvas.width/img2.width)/2, canvas.width,img2.height*canvas.width/img2.width);
 			}
 			var secondpixels = second.getImageData(0,0,canvas.width,canvas.height).data;
 
