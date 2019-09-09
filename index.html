@@ -24,7 +24,8 @@
 	<img id="img2dummy">
 	<p></p>
 	
-	<canvas id="canvas"width="0" height="0"></canvas>
+	<canvas id="canvas"width="0" height="0" style="display:none"></canvas>
+	<img id="res">
 	<input type="button" value="변환" onclick="fun2();">
 
 	<script>
@@ -95,7 +96,7 @@
 					var a = parseInt((firstpixels[off]+firstpixels[off+1]+firstpixels[off+2])/6+128);
 					var b = parseInt((secondpixels[off]+secondpixels[off+1]+secondpixels[off+2])/6);
 					var rgb = parseInt(b*255/(255-a+b));
-					var alpha = parseInt(255-a+b);//B goes 0 when no img. so alpha is 0
+					var alpha = parseInt(255-a+b);
 					pixels[off] = rgb;
 					pixels[off+1] = rgb;
 					pixels[off+2] = rgb;
@@ -103,6 +104,9 @@
 				}
 			}
 			result.putImageData(id,0,0);
+			dataUrl = canvas.toDataURL();
+			canvasToImg = document.getElementById('res');
+			canvasToImg.src = dataUrl;
 		}
 	</script>
 </body>
