@@ -1,0 +1,109 @@
+<!--
+	빵쯔갤 20190910
+-->
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://code.jquery.com/jquery-1.10.2.js">
+	</script>
+	<style>
+		body {
+			background-color: black;
+			background-color: white;
+		}
+	</style>
+</head>
+<body>
+	겉 이미지 <input type="file" accept=".jpg,.jpeg,.png,.gif" onchange="fun(this,'#img1','img1dummy');" height="100px">
+	<img id="img1" style="display:none">
+	<img id="img1dummy">
+	<p></p>
+
+	속 이미지 <input type="file" accept=".jpg,.jpeg,.png,.gif" onchange="fun(this,'#img2','img2dummy');">
+	<img id="img2" style="display:none">
+	<img id="img2dummy">
+	<p></p>
+	
+	<canvas id="canvas"width="0" height="0"></canvas>
+	<input type="button" value="변환" onclick="fun2();">
+
+	<script>
+		function fun(input,imgId,dummyimgId) {
+			if (input.files && input.files[0]) {
+				var reader = new FileReader();
+				reader.onload = function (e) {
+					$(imgId).attr('src', e.target.result);
+				}
+				reader.readAsDataURL(input.files[0]);
+				var reader2 = new FileReader();
+				reader2.onload = function (e) {
+					$("#"+dummyimgId).attr('src', e.target.result);
+				}
+				reader2.readAsDataURL(input.files[0]);
+				document.getElementById(dummyimgId).style.height="240px";
+			}
+		}
+
+		function fun2() {
+			var img1 = document.getElementById("img1");
+			var img2 = document.getElementById("img2");
+			if(img1.width==0) {
+				var canvas = document.getElementById('canvas');
+				canvas.width = img2.width;
+				canvas.height = img2.height;
+				var result = canvas.getContext('2d');
+				var id = result.getImageData(0,0,canvas.width,canvas.height);
+				var pixels = id.data;
+			} else {
+				var canvas = document.getElementById('canvas');
+				canvas.width = img1.width;
+				canvas.height = img1.height;
+				var result = canvas.getContext('2d');
+				var id = result.getImageData(0,0,canvas.width,canvas.height);
+				var pixels = id.data;
+			}
+
+
+			var canvas2 = document.createElement('canvas');
+			canvas2.width = canvas.width;
+			canvas2.height = canvas.height;
+			var first = canvas2.getContext('2d');
+			first.fillStyle = "#FFFFFF";
+			first.drawImage(img1,0,0, canvas.width,canvas.height);
+			var firstpixels = first.getImageData(0,0,canvas.width,canvas.height).data;
+
+			var canvas3 = document.createElement('canvas');
+			canvas3.width = canvas.width;
+			canvas3.height = canvas.height;
+			var second = canvas3.getContext('2d');
+			if(canvas.width/canvas.height>img2.width/img2.height) {
+				second.drawImage(img2,img2.width*canvas.height/img2.height/2,0, img2.width*canvas.height/img2.height,canvas.height);
+			}
+			else if(canvas.width/canvas.height==img2.width/img2.height) {
+				second.drawImage(img2,0,0, canvas.width,canvas.height);	
+			}
+			else {
+				second.drawImage(img2,0,img2.height*canvas.width/img2.width/2, canvas.width,img2.height*canvas.width/img2.width);
+			}
+			var secondpixels = second.getImageData(0,0,canvas.width,canvas.height).data;
+
+			for (var i = 0; i < canvas.height; i++) {
+
+				for (var j = 0; j < canvas.width; j++) {
+					var off = (i*canvas.width + j) * 4;
+
+					var a = parseInt((firstpixels[off]+firstpixels[off+1]+firstpixels[off+2])/6+128);
+					var b = parseInt((secondpixels[off]+secondpixels[off+1]+secondpixels[off+2])/6);
+					var rgb = parseInt(b*255/(255-a+b));
+					var alpha = parseInt(255-a+b);//B goes 0 when no img. so alpha is 0
+					pixels[off] = rgb;
+					pixels[off+1] = rgb;
+					pixels[off+2] = rgb;
+					pixels[off+3] = alpha;
+				}
+			}
+			result.putImageData(id,0,0);
+		}
+	</script>
+</body>
+</html>
